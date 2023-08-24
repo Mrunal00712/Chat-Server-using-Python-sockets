@@ -1,0 +1,33 @@
+import socket
+import threading
+
+my_protocol = socket.SOCK_DGRAM
+address_family = socket.AF_INET
+
+s = socket.socket(my_protocol, address_family)
+
+ip = "172.31.46.239" 
+port = 12345
+
+s.bind((ip, port))
+
+def send():
+    while True:
+        your_message = input("You: ")
+        s.sendto(your_message.encode(), ("172.31.38.46", 12345))
+        
+def receive():
+    while True:
+        data, client_address = s.recvfrom(1024)
+        client_ip, client_port = client_address
+        message = data.decode()
+        print(f"\n{client_ip}: {message}")
+
+task1 = threading.Thread(target=send)
+task2 = threading.Thread(target=receive)
+
+task1.start()
+task2.start()
+
+task1.join()
+task2.join()
